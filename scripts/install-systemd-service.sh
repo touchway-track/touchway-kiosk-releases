@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SERVICE_NAME="touchway-tv"
-WORKING_DIR="/opt/touchway-tv/current"
-APPIMAGE_PATH="/opt/touchway-tv/current/touchway-tv.AppImage"
-EXEC_START="/opt/touchway-tv/current/run-touchway-tv.sh"
+SERVICE_NAME="touchway-kiosk"
+WORKING_DIR="/opt/touchway-kiosk/current"
+APPIMAGE_PATH="/opt/touchway-kiosk/current/touchway-kiosk.AppImage"
+EXEC_START="/opt/touchway-kiosk/current/run-touchway-kiosk.sh"
 RUN_USER="${SUDO_USER:-${USER:-touchway}}"
 RESTART_SEC="5"
 AUTO_UPDATE_ENABLED="true"
@@ -21,10 +21,10 @@ usage() {
 Usage: $0 [options]
 
 Options:
-  --service-name NAME   Systemd service name (default: touchway-tv)
-  --working-dir PATH    Working directory for the service (default: /opt/touchway-tv/current)
-  --appimage PATH       AppImage path managed by the service (default: /opt/touchway-tv/current/touchway-tv.AppImage)
-  --exec PATH           Wrapper path used by ExecStart (default: /opt/touchway-tv/current/run-touchway-tv.sh)
+  --service-name NAME   Systemd service name (default: touchway-kiosk)
+  --working-dir PATH    Working directory for the service (default: /opt/touchway-kiosk/current)
+  --appimage PATH       AppImage path managed by the service (default: /opt/touchway-kiosk/current/touchway-kiosk.AppImage)
+  --exec PATH           Wrapper path used by ExecStart (default: /opt/touchway-kiosk/current/run-touchway-kiosk.sh)
   --user USER           Linux user to run the app (default: current sudo user)
   --restart-sec SEC     Restart delay in seconds (default: 5)
   --auto-update-enabled VALUE             true|false (default: true)
@@ -203,9 +203,9 @@ APPIMAGE_PATH="${APPIMAGE_PATH}"
 WORKING_DIR="${WORKING_DIR}"
 MAX_UPDATE_RESTARTS="${AUTO_UPDATE_ROLLBACK_MAX_RESTARTS}"
 
-UPDATE_PENDING_FILE="\${WORKING_DIR}/.touchway-tv-update-pending"
-UPDATE_RESTART_COUNT_FILE="\${WORKING_DIR}/.touchway-tv-update-restart-count"
-UPDATE_HEALTH_FILE="\${WORKING_DIR}/.touchway-tv-update-healthy"
+UPDATE_PENDING_FILE="\${WORKING_DIR}/.touchway-kiosk-update-pending"
+UPDATE_RESTART_COUNT_FILE="\${WORKING_DIR}/.touchway-kiosk-update-restart-count"
+UPDATE_HEALTH_FILE="\${WORKING_DIR}/.touchway-kiosk-update-healthy"
 APPIMAGE_BACKUP_PATH="\${APPIMAGE_PATH}.prev.AppImage"
 
 if [[ ! -x "\${APPIMAGE_PATH}" ]]; then
@@ -264,7 +264,7 @@ fi
 
 cat > "$SERVICE_FILE" <<SERVICE
 [Unit]
-Description=Touchway TV Kiosk
+Description=Touchway Kiosk
 Wants=${UNIT_WANTS}
 After=${UNIT_AFTER}
 

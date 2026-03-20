@@ -4,10 +4,10 @@ set -euo pipefail
 REPO="touchway-track/touchway-kiosk-releases"
 TAG=""
 ARCH=""
-INSTALL_DIR="/opt/touchway-tv/current"
-APPIMAGE_NAME="touchway-tv.AppImage"
+INSTALL_DIR="/opt/touchway-kiosk/current"
+APPIMAGE_NAME="touchway-kiosk.AppImage"
 RUN_USER="${SUDO_USER:-${USER:-touchway}}"
-SERVICE_NAME="touchway-tv"
+SERVICE_NAME="touchway-kiosk"
 SKIP_SERVICE_INSTALL="false"
 
 usage() {
@@ -18,10 +18,10 @@ Options:
   --repo OWNER/REPO         GitHub repository (default: touchway-track/touchway-kiosk-releases)
   --tag TAG                 Release tag (default: latest release)
   --arch ARCH               x64, arm64, or armv7l (default: auto-detect from uname -m)
-  --install-dir PATH        Install directory (default: /opt/touchway-tv/current)
-  --appimage-name NAME      Installed AppImage filename (default: touchway-tv.AppImage)
+  --install-dir PATH        Install directory (default: /opt/touchway-kiosk/current)
+  --appimage-name NAME      Installed AppImage filename (default: touchway-kiosk.AppImage)
   --user USER               Service Linux user (default: current sudo user)
-  --service-name NAME       Systemd service name (default: touchway-tv)
+  --service-name NAME       Systemd service name (default: touchway-kiosk)
   --skip-service-install    Download only; do not install/restart systemd service
   -h, --help                Show this help
 USAGE
@@ -200,5 +200,5 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   --service-name "$SERVICE_NAME" \
   --working-dir "$INSTALL_DIR" \
   --appimage "$target_path" \
-  --exec "${INSTALL_DIR}/run-touchway-tv.sh" \
+  --exec "${INSTALL_DIR}/run-touchway-kiosk.sh" \
   --user "$RUN_USER"

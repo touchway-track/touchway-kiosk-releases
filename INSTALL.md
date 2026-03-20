@@ -13,7 +13,7 @@ git clone https://github.com/touchway-track/touchway-kiosk-releases.git && cd to
 This single command performs all required setup:
 
 - Downloads and installs the latest compatible AppImage
-- Configures the `touchway-tv` systemd service
+- Configures the `touchway-kiosk` systemd service
 - Enables automatic start after reboot (`systemctl enable`)
 - Enables automatic restart on crash (`Restart=always`)
 
@@ -42,7 +42,7 @@ sudo ./scripts/bootstrap-linux-kiosk.sh --arch armv7l --user touchway
 ## Service Operations
 
 ```bash
-systemctl status touchway-tv --no-pager
-journalctl -u touchway-tv -n 200 --no-pager
-sudo systemctl restart touchway-tv
+systemctl status touchway-kiosk --no-pager
+journalctl -u touchway-kiosk -n 200 --no-pager
+sudo systemctl restart touchway-kiosk
 ```
