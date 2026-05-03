@@ -27,6 +27,115 @@ Options:
 USAGE
 }
 
+detect_package_manager() {
+  if command -v apt-get >/dev/null 2>&1; then
+    echo "apt-get"
+    return 0
+  fi
+  if command -v dnf >/dev/null 2>&1; then
+    echo "dnf"
+    return 0
+  fi
+  if command -v yum >/dev/null 2>&1; then
+    echo "yum"
+    return 0
+  fi
+  if command -v pacman >/dev/null 2>&1; then
+    echo "pacman"
+    return 0
+  fi
+  if command -v zypper >/dev/null 2>&1; then
+    echo "zypper"
+    return 0
+  fi
+  if command -v apk >/dev/null 2>&1; then
+    echo "apk"
+    return 0
+  fi
+  return 1
+}
+
+install_with_package_manager() {
+  local manager="$1"
+  shift
+  local packages=("$@")
+
+  case "$manager" in
+    apt-get)
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update -y
+      apt-get install -y "${packages[@]}"
+      ;;
+    dnf)
+      dnf install -y "${packages[@]}"
+      ;;
+    yum)
+      yum install -y "${packages[@]}"
+      ;;
+    pacman)
+      pacman -Sy --noconfirm --needed "${packages[@]}"
+      ;;
+    zypper)
+      zypper --non-interactive install "${packages[@]}"
+      ;;
+    apk)
+      apk add --no-cache "${packages[@]}"
+      ;;
+    *)
+      echo "Unsupported package manager: $manager" >&2
+      return 1
+      ;;
+  esac
+}
+
+resolve_dependency_package() {
+  local manager="$1"
+  local dependency="$2"
+
+  case "${dependency}:${manager}" in
+    curl:*)
+      echo "curl"
+      ;;
+    python3:pacman)
+      echo "python"
+      ;;
+    python3:*)
+      echo "python3"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+ensure_dependency() {
+  local dependency="$1"
+
+  if command -v "$dependency" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  local package_manager
+  if ! package_manager="$(detect_package_manager)"; then
+    echo "${dependency} is required but no supported package manager was found to install it automatically." >&2
+    return 1
+  fi
+
+  local package
+  if ! package="$(resolve_dependency_package "$package_manager" "$dependency")"; then
+    echo "Could not resolve package name for dependency '${dependency}' using ${package_manager}." >&2
+    return 1
+  fi
+
+  echo "Installing missing dependency '${dependency}' with ${package_manager}..."
+  install_with_package_manager "$package_manager" "$package"
+
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    echo "Failed to install dependency '${dependency}'." >&2
+    return 1
+  fi
+}
+
 resolve_arch() {
   local uname_arch
   uname_arch="$(uname -m)"
@@ -122,15 +231,8 @@ if [[ "$ARCH" != "x64" && "$ARCH" != "arm64" && "$ARCH" != "armv7l" ]]; then
   exit 1
 fi
 
-if ! command -v curl >/dev/null 2>&1; then
-  echo "curl is required but not installed." >&2
-  exit 1
-fi
-
-if ! command -v python3 >/dev/null 2>&1; then
-  echo "python3 is required but not installed." >&2
-  exit 1
-fi
+ensure_dependency curl
+ensure_dependency python3
 
 if ! id "$RUN_USER" >/dev/null 2>&1; then
   echo "User does not exist: $RUN_USER" >&2
